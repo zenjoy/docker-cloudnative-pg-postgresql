@@ -11,7 +11,11 @@ updates:
     directory: '/14/'
     schedule:
       interval: 'daily'
+    ignore:
+      - update-types: ['version-update:semver-major']
   - package-ecosystem: 'docker'
     directory: '/15/'
     schedule:
       interval: 'daily'
+    ignore:
+      - update-types: ['version-update:semver-major']
