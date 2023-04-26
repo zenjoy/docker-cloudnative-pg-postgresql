@@ -19,7 +19,7 @@ jobs:
   build:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     name: Build and publish image
-    runs-on: ubuntu-latest-8-cores
+    runs-on: ubuntu-latest-16-cores
     strategy:
       fail-fast: false
       matrix:
@@ -41,7 +41,14 @@ jobs:
       - name: Parse PostgreSQL version
         id: version
         run: |
-          echo "version=$(grep -Eo 'postgresql:[0-9]+\.[0-9]+\-[0-9]+$' ${{ matrix.major }}/Dockerfile | cut -d ':' -f2)" | tee -a $GITHUB_OUTPUT
+          POSTGRESQL_VERSION=$(grep -Eo 'postgresql:[0-9]+\.[0-9]+\-[0-9]+$' ${{ matrix.major }}/Dockerfile | cut -d ':' -f2)
+          MAJOR=$(echo $POSTGRESQL_VERSION | cut -d . -f 1)
+          MINOR=$(echo $POSTGRESQL_VERSION | cut -d . -f 2 | cut -d '-' -f 1)
+          PATCH=$(echo $POSTGRESQL_VERSION | cut -d . -f 2 | cut -d '-' -f 2)
+          echo "major=$MAJOR" | tee -a $GITHUB_OUTPUT
+          echo "minor=$MINOR" | tee -a $GITHUB_OUTPUT
+          echo "patch=$PATCH" | tee -a $GITHUB_OUTPUT
+          echo "version=$MAJOR.$MINOR.$PATCH" | tee -a $GITHUB_OUTPUT
 
       - name: Generate build tag from head
         id: branch
@@ -107,8 +114,6 @@ jobs:
 
       - name: Push version tags
         run: |
-          MAJOR=$(echo $POSTGRESQL_VERSION | cut -d . -f 1)
-          MINOR=$(echo $POSTGRESQL_VERSION | cut -d . -f 2 | cut -d '-' -f 1)
           git tag -f "v$MAJOR"
           git tag -f "v$MAJOR.$MINOR"
           git tag -f "v$POSTGRESQL_VERSION"
@@ -117,3 +122,5 @@ jobs:
           git push -f -u origin "v$POSTGRESQL_VERSION"
         env:
           POSTGRESQL_VERSION: ${{ steps.version.outputs.version }}
+          MINOR: ${{ steps.version.outputs.minor }}
+          MAJOR: ${{ steps.version.outputs.major }}
