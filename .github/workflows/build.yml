@@ -60,6 +60,8 @@ jobs:
         uses: docker/metadata-action@v4
         id: metadata
         with:
+          flavor: |
+            latest=${{ matrix.major == '15' }}
           images: |
             docker.io/${{ steps.name.outputs.name }}
             ghcr.io/${{ steps.name.outputs.name }}
