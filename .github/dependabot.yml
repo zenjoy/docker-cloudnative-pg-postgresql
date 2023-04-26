@@ -8,6 +8,10 @@ updates:
 
   # Maintain dependencies within Dockerfiles
   - package-ecosystem: 'docker'
-    directory: '/'
+    directory: '/14/'
+    schedule:
+      interval: 'daily'
+  - package-ecosystem: 'docker'
+    directory: '/15/'
     schedule:
       interval: 'daily'
