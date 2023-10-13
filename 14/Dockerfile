@@ -1,4 +1,4 @@
-FROM ghcr.io/cloudnative-pg/postgresql:14.7-10
+FROM ghcr.io/cloudnative-pg/postgresql:16.0-7
 
 USER root
 
